@@ -6,7 +6,7 @@ export const issueComponent= async (req,res)=>{
     try{
         const{studentId,componentId,quantityIssued}= req.body;
 
-        const component= Component.findById(componentId);
+        const component= await Component.findById(componentId);
         if(!component) return res.status(404).json({message:"Component Not Found"});
 
         if(component.quantityAvailable< quantityIssued){
@@ -16,7 +16,7 @@ export const issueComponent= async (req,res)=>{
 
         component.quantityAvailable -= quantityIssued;
 
-        await Component.save();
+        await component.save();
 
         const issue= await Issue.create({
             studentId,
@@ -41,7 +41,7 @@ export const getAllIssues= async (req,res)=>{
 
     try{
         const issues= await Issue.find()
-        .populate("studenId","name email rollNo")
+        .populate("studentId","name email rollNo")
         .populate("componentId","name category")
 
         res.json(issues);
@@ -62,7 +62,7 @@ export const getStudentIssues= async (req,res)=>{
         const issues= await Issue.find({studentId:id})
         .populate("componentId","name category");
 
-        res.josn(issues);
+        res.json(issues);
 
 
     } catch (err) {
@@ -80,16 +80,26 @@ export const markAsReturned= async (req,res)=>{
         const issue= await Issue.findById(req.params.id);
         if(!issue) return res.status(404).json({message:"Issue not found"});
 
-        //restore component stock
-        const component= await Component.findById(issue.componentId);
-        if(component){
-            component.quantityAvailable+= issue.quantityIssued;
-            await component.save();
-
+        if(issue.status ==="Returned"){
+            return res.status(400).json({message:"This issue is already being mark as returned"});
         }
 
+        //restore component stock
+        const component= await Component.findById(issue.componentId);
+        if(!component)
+            return res.status(400).jaon({message:"Component not found"});
+
+
+        component.quantityAvailable += issue.quantityIssued;
+
+         if (component.quantityAvailable > component.totalQuantity) {
+        component.quantityAvailable = component.totalQuantity;
+        }
+
+        await component.save();
+
         issue.status="Returned";
-        issue.dateReturned= new Date.now();
+        issue.dateReturned= new Date;
         await issue.save();
 
         res.json({message:"Mark as returned",issue});

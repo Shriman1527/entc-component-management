@@ -4,8 +4,8 @@ import dotenv from 'dotenv';
 import cors from 'cors';
 
 import authRoutes from './routes/authRoutes.js';
-// import componentRoutes from './routes/componentRoutes';
-// import issueRoutes from './routes/issueRoutes';
+import componentRoutes from './routes/componentRoutes.js';
+import issueRoutes from './routes/issueRoutes.js';
 
 dotenv.config();
 
@@ -19,8 +19,8 @@ app.use(express.json());
 //routes
 
 app.use("/api/auth",authRoutes);
-// app.use("/api/components",componentRoutes);
-// app.use("/api/issue",issueRoutes);
+app.use("/api/components",componentRoutes);
+app.use("/api/issue",issueRoutes);
 
 
 //database connection

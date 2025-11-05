@@ -19,7 +19,7 @@ router.get("/:id",protect,getComponentById);
 //admin only routes
 router.post("/",protect,adminOnly,addComponent);
 router.put("/:id",protect,adminOnly,updateComponent);
-router.delete("/:id".protect,adminOnly,deleteComponent);
+router.delete("/:id",protect,adminOnly,deleteComponent);
 
 
 export default router;

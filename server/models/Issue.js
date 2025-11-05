@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
-import Component from "./Component";
+import User from './User.js'
+import Component from "./Component.js";
 
 const issueSchema=  new mongoose.Schema({
     studentId:{type:mongoose.Schema.ObjectId,ref:User},

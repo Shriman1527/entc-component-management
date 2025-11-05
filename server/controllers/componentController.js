@@ -42,10 +42,16 @@ export const updateComponent=async (req,res)=>{
 
     try{
 
-         const id= req.params;
+         const {id}= req.params;
+         const updates= {...req.body};
 
-        const updated= await Component.findByIdAndUpdate(id,req.body,{new:true});
-        res.josn(updated);
+          if (updates.totalQuantity !== undefined) {
+      updates.quantityAvailable = updates.totalQuantity;
+    }
+
+       const updated = await Component.findByIdAndUpdate(id, updates, { new: true });
+         if (!updated) return res.status(404).json({ message: "Component not found" });
+        res.json({message: "Component updated successfully",updated});
 
 
     }catch (err) {
@@ -71,7 +77,7 @@ export const getComponentById=async (req,res)=>{
 
     try{
         const component= await Component.findById(req.params.id);
-        if(!component) res.status(404).json({message:"Component not found"});
+        if(!component) return res.status(404).json({message:"Component not found"});
         res.json(component);
 
     } catch (err) {
