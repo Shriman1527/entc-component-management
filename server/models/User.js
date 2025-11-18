@@ -6,7 +6,14 @@ const userSchema = new mongoose.Schema({
     email:{type:String, unique:true},
     password:String ,
     role:{type:String , enum:["admin","student"], default:"student"},
-    rollNo:String,
+    rollNo: {
+    type: String,
+    required: function () {
+      return this.role === "student"
+    },
+
+   }
+
 
 },{timestamps:true});
 

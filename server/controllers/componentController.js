@@ -38,26 +38,60 @@ export const getComponents= async (req,res)=>{
     }
 }
 
-export const updateComponent=async (req,res)=>{
+// export const updateComponent=async (req,res)=>{
 
-    try{
+//     try{
 
-         const {id}= req.params;
-         const updates= {...req.body};
+//          const {id}= req.params;
+//          const updates= {...req.body};
 
-          if (updates.totalQuantity !== undefined) {
-      updates.quantityAvailable = updates.totalQuantity;
+//           if (updates.totalQuantity !== undefined) {
+//       updates.quantityAvailable = updates.totalQuantity;
+//     }
+
+//        const updated = await Component.findByIdAndUpdate(id, updates, { new: true });
+//          if (!updated) return res.status(404).json({ message: "Component not found" });
+//         res.json({message: "Component updated successfully",updated});
+
+
+//     }catch (err) {
+//     res.status(500).json({ message: err.message });
+//   }
+   
+// };
+
+export const updateComponent = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const updates = { ...req.body };
+
+    // Prevent resetting availability wrongly
+    if (updates.totalQuantity !== undefined) {
+
+      const existing = await Component.findById(id);
+      if (!existing)
+        return res.status(404).json({ message: "Component not found" });
+
+      // Calculate new availability
+      const diff = updates.totalQuantity - existing.totalQuantity;
+
+      updates.quantityAvailable = existing.quantityAvailable + diff;
+
+      if (updates.quantityAvailable < 0)
+        updates.quantityAvailable = 0;
     }
 
-       const updated = await Component.findByIdAndUpdate(id, updates, { new: true });
-         if (!updated) return res.status(404).json({ message: "Component not found" });
-        res.json({message: "Component updated successfully",updated});
+    const updated = await Component.findByIdAndUpdate(id, updates, {
+      new: true,
+    });
 
+    if (!updated)
+      return res.status(404).json({ message: "Component not found" });
 
-    }catch (err) {
+    res.json({ message: "Component updated successfully", updated });
+  } catch (err) {
     res.status(500).json({ message: err.message });
   }
-   
 };
 
 export const deleteComponent= async (req,res)=>{

@@ -8,6 +8,6 @@ const componentSchema= new mongoose.Schema({
     description:String,
     location:String,
 
-},{timestamp:true});
+},{timestamps:true});
 
 export default mongoose.model("Component", componentSchema);

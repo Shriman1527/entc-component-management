@@ -1,12 +1,16 @@
-import express from 'express';
-import {register,login } from '../controllers/authController.js';
+import express from "express";
+import { login, createStudent } from "../controllers/authController.js";
+import { protect, adminOnly } from "../middleware/authMiddleware.js";
 
-const router= express.Router();
+const router = express.Router();
 
-router.post("/register",register);
+
+
+// Everyone can login
 router.post("/login", login);
 
 export default router;
+
 
 
 

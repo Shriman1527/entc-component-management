@@ -3,7 +3,8 @@ import {
     issueComponent,
     getAllIssues,
     getStudentIssues,
-    markAsReturned
+    markAsReturned,
+    getMyIssues
 } from '../controllers/issueControllers.js';
 
 import { protect,adminOnly } from '../middleware/authMiddleware.js';
@@ -18,6 +19,8 @@ router.put("/:id/return",protect,adminOnly,markAsReturned);
 
 //below for student to viewed thier issued component
 router.get("/student/:id",protect,getStudentIssues);
+router.get("/student/me", protect, getMyIssues);
+
 
 export default router;
 

@@ -9,6 +9,9 @@ export const issueComponent= async (req,res)=>{
         const component= await Component.findById(componentId);
         if(!component) return res.status(404).json({message:"Component Not Found"});
 
+        const student = await User.findById(studentId);
+        if (!student) return res.status(400).json({ message: "Student does not exist" });
+
         if(component.quantityAvailable< quantityIssued){
             return res.status(400).json({message:"Not enough quantity available"});
 
@@ -72,6 +75,19 @@ export const getStudentIssues= async (req,res)=>{
 }
 
 
+export const getMyIssues = async (req, res) => {
+  try {
+    const issues = await Issue.find({ studentId: req.user.id })
+      .populate("componentId", "name category");
+
+    res.json(issues);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+
+
 //mark as returned
 
 export const markAsReturned= async (req,res)=>{
@@ -87,7 +103,7 @@ export const markAsReturned= async (req,res)=>{
         //restore component stock
         const component= await Component.findById(issue.componentId);
         if(!component)
-            return res.status(400).jaon({message:"Component not found"});
+            return res.status(400).json({message:"Component not found"});
 
 
         component.quantityAvailable += issue.quantityIssued;

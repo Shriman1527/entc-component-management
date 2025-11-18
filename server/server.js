@@ -4,10 +4,13 @@ import dotenv from 'dotenv';
 import cors from 'cors';
 
 import authRoutes from './routes/authRoutes.js';
+import userRoutes from './routes/userRoutes.js'; 
 import componentRoutes from './routes/componentRoutes.js';
 import issueRoutes from './routes/issueRoutes.js';
 
 dotenv.config();
+console.log("SMTP:", process.env.SMTP_EMAIL, process.env.SMTP_PASS);
+
 
 const app=express();
 
@@ -19,6 +22,7 @@ app.use(express.json());
 //routes
 
 app.use("/api/auth",authRoutes);
+app.use("/api/users", userRoutes); 
 app.use("/api/components",componentRoutes);
 app.use("/api/issue",issueRoutes);
 
