@@ -1,5 +1,5 @@
 import express from "express";
-import { login, createStudent } from "../controllers/authController.js";
+import { login } from "../controllers/authController.js";
 import { protect, adminOnly } from "../middleware/authMiddleware.js";
 
 const router = express.Router();

@@ -1,5 +1,6 @@
 import Issue from '../models/Issue.js';
 import Component from '../models/Component.js';
+import User from '../models/User.js';
 
 export const issueComponent= async (req,res)=>{
 
@@ -58,21 +59,21 @@ export const getAllIssues= async (req,res)=>{
 
 
 //get issues for a student 
-export const getStudentIssues= async (req,res)=>{
+// export const getStudentIssues= async (req,res)=>{
 
-    try{
-        const {id}= req.params;
-        const issues= await Issue.find({studentId:id})
-        .populate("componentId","name category");
+//     try{
+//         const {id}= req.params;
+//         const issues= await Issue.find({studentId:id})
+//         .populate("componentId","name category");
 
-        res.json(issues);
+//         res.json(issues);
 
 
-    } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
+//     } catch (err) {
+//     res.status(500).json({ message: err.message });
+//   }
 
-}
+// }
 
 
 export const getMyIssues = async (req, res) => {

@@ -2,7 +2,7 @@ import express, { Router } from 'express';
 import {
     issueComponent,
     getAllIssues,
-    getStudentIssues,
+    
     markAsReturned,
     getMyIssues
 } from '../controllers/issueControllers.js';
@@ -18,7 +18,7 @@ router.get("/",protect,adminOnly,getAllIssues);
 router.put("/:id/return",protect,adminOnly,markAsReturned);
 
 //below for student to viewed thier issued component
-router.get("/student/:id",protect,getStudentIssues);
+// router.get("/student/:id",protect,getStudentIssues);
 router.get("/student/me", protect, getMyIssues);
 
 
