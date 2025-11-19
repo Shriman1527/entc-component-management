@@ -6,6 +6,11 @@ import Login from './pages/Login';
 import AdminDashboard from './pages/AdminDashboard';
 import StudentDashboard from './pages/StudentDashboard';
 
+
+
+//-----
+// Secure, HTTP-Only Cookie-based Authentication to prevent XSS attacks."
+//-----
 // --- 1. Role-Based Route Protection ---
 // This wrapper checks if the user has the SPECIFIC role required for the page
 const ProtectedRoute = ({ children, allowedRole }) => {

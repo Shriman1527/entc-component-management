@@ -24,9 +24,35 @@ export const login = async (req, res) => {
       { expiresIn: "7d" }
     );
 
+
+    //----- // SEND COOKIE
+    res.cookie('jwt', token, {
+      httpOnly: true, // JavaScript cannot read this (Protects against XSS)
+      secure: process.env.NODE_ENV === 'production', // Only send over HTTPS in production
+      sameSite: 'strict', // Protects against CSRF
+      maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days in milliseconds
+    });
+
+    //-------
+
+
+    // res.json({
+    //   message: "Login successful",
+    //   token,
+    //   user: {
+    //     id: user._id,
+    //     role: user.role,
+    //     name: user.name,
+    //     rollNo: user.rollNo || null,
+    //     email: user.email,
+    //   },
+    // });
+
+
+    //
+    // Send user data (BUT NOT THE TOKEN) in JSON
     res.json({
       message: "Login successful",
-      token,
       user: {
         id: user._id,
         role: user.role,
@@ -39,4 +65,17 @@ export const login = async (req, res) => {
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
+};
+
+
+
+//----------- New functionn
+
+// ADD A LOGOUT FUNCTION
+export const logout = (req, res) => {
+  res.cookie('jwt', '', {
+    httpOnly: true,
+    expires: new Date(0) // Expire the cookie immediately
+  });
+  res.status(200).json({ message: 'Logged out' });
 };

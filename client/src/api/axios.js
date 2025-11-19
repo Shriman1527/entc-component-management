@@ -41,21 +41,29 @@
 
 import axios from 'axios';
 
+// const api = axios.create({
+//   baseURL: 'http://localhost:5000/api',
+// });
+
 const api = axios.create({
   baseURL: 'http://localhost:5000/api',
+  withCredentials: true // <--- THIS IS THE MAGIC KEY. It enables cookies.
 });
 
+
+// Note: We REMOVED the request interceptor that adds 'Authorization: Bearer...'
+// The browser now handles that automatically via the cookie.
 // 1. Attach Token (Using sessionStorage as agreed)
-api.interceptors.request.use(
-  (config) => {
-    const token = sessionStorage.getItem('token');
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-  },
-  (error) => Promise.reject(error)
-);
+// api.interceptors.request.use(
+//   (config) => {
+//     const token = sessionStorage.getItem('token');
+//     if (token) {
+//       config.headers.Authorization = `Bearer ${token}`;
+//     }
+//     return config;
+//   },
+//   (error) => Promise.reject(error)
+// );
 
 // 2. Auto-Logout on Token Error
 api.interceptors.response.use(
@@ -66,7 +74,9 @@ api.interceptors.response.use(
 
     // If the backend says "User not found" or token is invalid, wipe and redirect
     if (status === 401 || status === 403 || (status === 404 && msg === "User not found")) {
-      sessionStorage.removeItem('token');
+      // We don't need to clear localStorage token anymore because we aren't using it.
+      // We just clear user data and redirect.
+      // sessionStorage.removeItem('token');
       sessionStorage.removeItem('user');
       window.location.href = '/login';
     }

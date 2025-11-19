@@ -76,15 +76,21 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     // Change: Check sessionStorage instead of localStorage
     const storedUser = sessionStorage.getItem('user');
-    const token = sessionStorage.getItem('token');
+
+    // We only check for USER data, not the token (token is hidden in cookie)
+    // const token = sessionStorage.getItem('token');
     
-    if (storedUser && token) {
-      try {
-        setUser(JSON.parse(storedUser));
-      } catch (e) {
-        sessionStorage.removeItem('user');
-        sessionStorage.removeItem('token');
-      }
+    // if (storedUser && token) {
+    //   try {
+    //     setUser(JSON.parse(storedUser));
+    //   } catch (e) {
+    //     sessionStorage.removeItem('user');
+    //     sessionStorage.removeItem('token');
+    //   }
+    // }
+
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
     }
     setLoading(false);
   }, []);
@@ -93,8 +99,10 @@ export const AuthProvider = ({ children }) => {
     try {
       const { data } = await api.post('/auth/login', { email, password });
       
+      // DO NOT save data.token anymore. 
+      // Only save non-sensitive user info for the UI.
       // Change: Save to sessionStorage (clears when tab is closed)
-      sessionStorage.setItem('token', data.token);
+      // sessionStorage.setItem('token', data.token);
       sessionStorage.setItem('user', JSON.stringify(data.user));
       
       setUser(data.user);
@@ -106,12 +114,25 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const logout = () => {
-    // Change: Clear sessionStorage
-    sessionStorage.removeItem('token');
-    sessionStorage.removeItem('user');
-    setUser(null);
-    toast.success('Logged out successfully');
+  // const logout = () => {
+  //   // Change: Clear sessionStorage
+  //   sessionStorage.removeItem('token');
+  //   sessionStorage.removeItem('user');
+  //   setUser(null);
+  //   toast.success('Logged out successfully');
+  // };
+
+  const logout = async () => {
+    try {
+      // Call backend to clear the httpOnly cookie
+      await api.post('/auth/logout'); 
+      
+      sessionStorage.removeItem('user');
+      setUser(null);
+      toast.success('Logged out');
+    } catch (error) {
+      console.error("Logout failed", error);
+    }
   };
 
   return (
