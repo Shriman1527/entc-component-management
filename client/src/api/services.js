@@ -60,6 +60,14 @@
 
 import api from './axios';
 
+
+export const authService = {
+  verifySession: async () => {
+    const response = await api.get('/auth/me');
+    return response.data;
+  }
+};
+
 // --- COMPONENT SERVICES ---
 export const componentService = {
   getAll: async () => {

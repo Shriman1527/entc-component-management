@@ -28,8 +28,9 @@ export const login = async (req, res) => {
     //----- // SEND COOKIE
     res.cookie('jwt', token, {
       httpOnly: true, // JavaScript cannot read this (Protects against XSS)
-      secure: process.env.NODE_ENV === 'production', // Only send over HTTPS in production
-      sameSite: 'strict', // Protects against CSRF
+      // secure: process.env.NODE_ENV === 'production', // Only send over HTTPS in production
+      secure:false,
+      sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax',// Protects against CSRF
       maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days in milliseconds
     });
 
@@ -78,4 +79,15 @@ export const logout = (req, res) => {
     expires: new Date(0) // Expire the cookie immediately
   });
   res.status(200).json({ message: 'Logged out' });
+};
+
+//---
+
+export const getMe = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id).select("-password");
+    res.json({ user });
+  } catch (err) {
+    res.status(500).json({ message: "Server Error" });
+  }
 };

@@ -66,20 +66,42 @@ const api = axios.create({
 // );
 
 // 2. Auto-Logout on Token Error
+// api.interceptors.response.use(
+//   (response) => response,
+//   (error) => {
+//     const status = error.response ? error.response.status : null;
+//     const msg = error.response?.data?.message;
+
+//     // If the backend says "User not found" or token is invalid, wipe and redirect
+//     if (status === 401 || status === 403 || (status === 404 && msg === "User not found")) {
+//       // We don't need to clear localStorage token anymore because we aren't using it.
+//       // We just clear user data and redirect.
+//       // sessionStorage.removeItem('token');
+//       sessionStorage.removeItem('user');
+//       window.location.href = '/login';
+//     }
+//     return Promise.reject(error);
+//   }
+// );
+
+
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    const status = error.response ? error.response.status : null;
+    const status = error.response?.status;
     const msg = error.response?.data?.message;
 
-    // If the backend says "User not found" or token is invalid, wipe and redirect
-    if (status === 401 || status === 403 || (status === 404 && msg === "User not found")) {
-      // We don't need to clear localStorage token anymore because we aren't using it.
-      // We just clear user data and redirect.
-      // sessionStorage.removeItem('token');
-      sessionStorage.removeItem('user');
-      window.location.href = '/login';
+    // Allow AuthContext to handle session verification
+    const isVerifying = window.location.pathname.includes("/login") === false;
+
+    if (isVerifying && (status === 401 || status === 403)) {
+      // Only redirect if user ALREADY has a session
+      if (sessionStorage.getItem("user")) {
+        sessionStorage.removeItem("user");
+        window.location.href = '/login';
+      }
     }
+
     return Promise.reject(error);
   }
 );

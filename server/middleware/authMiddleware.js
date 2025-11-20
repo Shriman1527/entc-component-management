@@ -4,10 +4,10 @@ import User from "../models/User.js";
 export const protect = async (req, res, next) => {
 
   // const token = req.headers.authorization?.split(" ")[1];
-  let token;
+ 
 
   // Read from Cookie instead of Header
-  token = req.cookies.jwt;
+ let token = req.cookies.jwt;
 
   if (!token)
     return res.status(401).json({ message: "Not Authorized" });
@@ -22,13 +22,13 @@ export const protect = async (req, res, next) => {
 
     next();
   } catch {
-    res.status(403).json({ message: "Invalid token" });
+    res.status(401).json({ message: "Invalid token" });
   }
 };
 
 export const adminOnly = (req, res, next) => {
   if (req.user.role !== "admin")
-    return res.status(403).json({ message: "Access Denied" });
+    return res.status(403).json({ message: "Access Denied" });  
 
   next();
 };

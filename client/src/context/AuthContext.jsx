@@ -73,27 +73,55 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    // Change: Check sessionStorage instead of localStorage
-    const storedUser = sessionStorage.getItem('user');
+  // useEffect(() => {
+  //   // Change: Check sessionStorage instead of localStorage
+  //   const storedUser = sessionStorage.getItem('user');
 
-    // We only check for USER data, not the token (token is hidden in cookie)
-    // const token = sessionStorage.getItem('token');
+  //   // We only check for USER data, not the token (token is hidden in cookie)
+  //   // const token = sessionStorage.getItem('token');
     
-    // if (storedUser && token) {
-    //   try {
-    //     setUser(JSON.parse(storedUser));
-    //   } catch (e) {
-    //     sessionStorage.removeItem('user');
-    //     sessionStorage.removeItem('token');
-    //   }
-    // }
+  //   // if (storedUser && token) {
+  //   //   try {
+  //   //     setUser(JSON.parse(storedUser));
+  //   //   } catch (e) {
+  //   //     sessionStorage.removeItem('user');
+  //   //     sessionStorage.removeItem('token');
+  //   //   }
+  //   // }
 
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    }
-    setLoading(false);
+  //   if (storedUser) {
+  //     setUser(JSON.parse(storedUser));
+  //   }
+  //   setLoading(false);
+  // }, []);
+
+
+   useEffect(() => {
+    checkLoggedIn();
   }, []);
+
+  const checkLoggedIn = async () => {
+    try {
+      // 1. Fast check from Session Storage
+      const storedUser = sessionStorage.getItem('user');
+      if (storedUser) {
+        setUser(JSON.parse(storedUser));
+        setLoading(false);
+        return;
+      }
+
+      // 2. Robust check via Cookie (Session Restoration)
+      const data = await authService.verifySession();
+      if (data.user) {
+        setUser(data.user);
+        sessionStorage.setItem('user', JSON.stringify(data.user));
+      }
+    } catch (error) {
+      sessionStorage.removeItem('user');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const login = async (email, password) => {
     try {

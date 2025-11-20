@@ -20,7 +20,7 @@ const app=express();
 
 
 ///---
-app.use(cookieParser());
+
 ///----
 
 // app.use(cors());
@@ -28,9 +28,11 @@ app.use(cookieParser());
 
 app.use(cors({
   origin: "http://localhost:5173", // The EXACT URL of your React Frontend
-  credentials: true // This allows the browser to send cookies
+  credentials: true ,// This allows the browser to send cookies
+   methods: ["GET", "POST", "PUT", "DELETE"]
 }));
 
+app.use(cookieParser());
 app.use(express.json());
 
 
